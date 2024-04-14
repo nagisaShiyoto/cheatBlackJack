@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="cards.cpp" />
     <ClCompile Include="dealer.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="user.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
