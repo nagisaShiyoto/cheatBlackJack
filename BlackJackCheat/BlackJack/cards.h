@@ -9,12 +9,18 @@ enum types
 	CLUB,
 	DIMOND
 };
-struct card
+enum ROYALTY
+{
+	JACK = 11,
+	QUEIN,
+	KING
+};
+typedef struct card
 {
 	int value;
 	int type;
 
-};
+}card;
 class cards
 {
 public:
@@ -22,8 +28,8 @@ public:
 	static int SIGN_NUM;
 	cards();
 	void createNewDeck();
-	struct card getCard();
+	card getCard();
 private:
-	std::vector<struct card> cardsDeck;
+	std::vector<card> _cardsDeck;
 };
 

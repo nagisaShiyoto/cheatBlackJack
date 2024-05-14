@@ -1,24 +1,10 @@
 #include <iostream>
 #include "cards.h"
-
+#include "dealer.h"
 int main()
 {
-	cards box;
-	struct card cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	cardT = box.getCard();
-	std::cout << cardT.value << std::endl;
-	
+	dealer manager;
+	manager.game();
 
-	return 1;
+	return 0;
 }
