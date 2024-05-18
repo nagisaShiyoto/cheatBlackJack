@@ -1,6 +1,8 @@
 #include "dealer.h"
+#include "simulations.h"
 #include <string>
 #define LIMIT 21
+#define TO_PRECENT 100
 void dealer::game()
 /*
 playing the game
@@ -33,9 +35,28 @@ output:none
 	}
 }
 
+
+
+
 dealer::dealer():_Deck()
 {
 }
+dealer::dealer(dealer& deal)
+{
+	this->hiddenCard = deal.gethiddenCard();
+	this->_Deck = deal.getDeck();
+	this->usingCards = deal.getUsingCards();
+}
+
+dealer dealer::operator=(dealer& rhs)
+{
+	dealer copy(rhs);
+	return copy;
+}
+
+
+
+
 
 card dealer::addCard(int person)
 {
@@ -46,7 +67,6 @@ card dealer::addCard(int person)
 	this->usingCards[person].push_back(card);
 	return card;
 }
-
 void dealer::printCards(int person,bool hidden)
 {
 //printing the cards of the wanted person
@@ -72,7 +92,6 @@ void dealer::printCards(int person,bool hidden)
 	}
 	std::cout << "--------------------------------------------------------------" << std::endl;
 }
-
 int dealer::options(int Place,int balance)
 //printing the first msgs to user
 //input: place- the place in the game to give the right msg
@@ -100,7 +119,6 @@ int dealer::options(int Place,int balance)
 	}
 	return choice;
 }
-
 std::string dealer::cardToStrnig(card card)
 {
 //turn the card info to text
@@ -146,7 +164,6 @@ std::string dealer::cardToStrnig(card card)
 	return cardInfo;
 
 }
-
 void dealer::gameSetup()
 {
 //create the start of the game 
@@ -158,7 +175,6 @@ void dealer::gameSetup()
 	this->addCard(USER);
 
 }
-
 int dealer::getAction()
 {
 //print the options and get the player action
@@ -174,20 +190,25 @@ int dealer::getAction()
 	std::cin >> option;
 	return option;
 }
-
 int dealer::userInteraction()
 //speak with the user and ask him what he want to do until he stay\bust
 //input:none
 //output:the sum of his cards
 {
+	int const SIM_NUM = 100000;
 	int const GET_CARD = 1;
 	int const STAY = 2;
 	bool stay = false;
 	bool bust = false;
 	int option = 0;
 	int sum=this->getSum(USER);
+	simulations sim(SIM_NUM);
+	float amountOfTries = 0;
 	while (!stay && !bust)
 	{
+		amountOfTries = sim.getBestMove(*this);
+		std::cout << "the probabilty you can draw another card is: " <<
+			amountOfTries* TO_PRECENT <<"%" << std::endl;
 		option = this->getAction();
 		if (option == GET_CARD)
 		{
@@ -207,7 +228,7 @@ int dealer::userInteraction()
 	
 	return sum;
 }
-int dealer::dealerChoice()
+int dealer::dealerChoice(bool print)
 //dealer choosing the cards(by the blackjack rules)
 //input:none
 //output: the last sum
@@ -219,7 +240,10 @@ int dealer::dealerChoice()
 		this->addCard(DEALER);
 		sum = this->getSum(DEALER);
 	}
-	this->printCards(DEALER,false);
+	if (print)
+	{
+		this->printCards(DEALER, false);
+	}
 
 	return sum;
 }
@@ -271,7 +295,6 @@ int dealer::getSum(int person)
 	}
 	return sum;
 }
-
 int dealer::getResult(int dealerSum, int userSum,int betAmaount)
 //get the sums and responde to the rusalt of the game
 //input:dealer's and user's sums,and the bet
@@ -295,3 +318,26 @@ int dealer::getResult(int dealerSum, int userSum,int betAmaount)
 	}
 	return 0;
 }
+
+
+cards dealer::getDeck()
+{
+	return this->_Deck;
+}
+card dealer::gethiddenCard()
+{
+	return this->hiddenCard;
+}
+std::map<int, std::vector<card>> dealer::getUsingCards()
+{
+	return this->usingCards;
+}
+
+
+
+
+
+
+
+
+

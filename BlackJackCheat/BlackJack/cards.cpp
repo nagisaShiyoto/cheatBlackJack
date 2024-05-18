@@ -48,10 +48,11 @@ card cards::getCard()
 	}
 	else
 	{
-		throw std::exception("box is empty");
+		this->createNewDeck();
+		//throw std::exception("box is empty");
 		//it wont get to here but okey
-		randCard.type = -1;
-		randCard.value = -1;
-		return randCard;
+		//randCard.type = -1;
+		//randCard.value = -1;
+		return this->getCard();
 	}
 }
