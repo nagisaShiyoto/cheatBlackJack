@@ -3,27 +3,28 @@
 #include <string>
 #define LIMIT 21
 #define TO_PRECENT 100
-void dealer::game()
+
+void dealer::gameUser()
 /*
-playing the game
+user playing the game
 input:none
 output:none
 */
 {
 	int money = 100;
 	int bettingAmount = 0;
-	bool con = this->options(START,money);
+	bool con = this->options(START, money);
 	int userSum = 0;
 	int dealerSum = 0;
-	while (con&&money>0)
+	while (con && money > 0)
 	{
 		bettingAmount = this->options(BET);
 		this->gameSetup();
-		userSum=this->userInteraction();
+		userSum = this->userInteraction();
 		dealerSum = this->dealerChoice();
 		money += this->getResult(dealerSum, userSum, bettingAmount);
 		this->usingCards.clear();
-		con = this->options(START,money);
+		con = this->options(START, money);
 	}
 	if (money > 0)
 	{
@@ -33,6 +34,48 @@ output:none
 	{
 		std::cout << "better luck next time:\\" << std::endl;
 	}
+}
+
+
+
+int dealer::gameAI()
+/*
+algorythem playing the game
+input:none
+output:none
+*/
+{
+	int highestMoney = 100;
+	int money = 100;
+	int bettingAmount = 50;
+	bool con = true;
+	int userSum = 0;
+	int dealerSum = 0;
+	while (con&&money>0)
+	{
+		this->gameSetup();
+		userSum=this->userInteraction(false);
+		dealerSum = this->dealerChoice();
+		money += this->getResult(dealerSum, userSum, bettingAmount);
+		if (money > highestMoney)
+		{
+			highestMoney = money;
+		}
+		this->usingCards.clear();
+		std::cout << "---------------------------------------------------" << std::endl;
+		std::cout << money << std::endl;
+		std::cout << "---------------------------------------------------" << std::endl;
+	}
+	if (money > 0)
+	{
+		std::cout << "come again:)" << std::endl;
+	}
+	else
+	{
+		std::cout << "better luck next time:\\" << std::endl;
+	}
+	std::cout << "highest money: " << highestMoney << std::endl;
+	return highestMoney;
 }
 
 
@@ -175,27 +218,44 @@ void dealer::gameSetup()
 	this->addCard(USER);
 
 }
-int dealer::getAction()
+int dealer::getAction(bool getAction, float prob)
 {
 //print the options and get the player action
-//inoput:none
+//inoput:getACtion-if the user want the algo to choose for him,
+//		prob-the probabality you should take another card
 //output:the user choosen action
+	float const MIN_ADD_CARD = 0.5;
 	int option = 0;
+	int const GET_CARD = 1;
+	int const STAY = 2;
 	this->printCards(DEALER);
 	std::cout << "one card ankown:(" << std::endl;
 	this->printCards(USER);
-	std::cout << "what would you like to do?" << std::endl;
-	std::cout << "1- get another card" << std::endl;
-	std::cout << "2- stay" << std::endl;
-	std::cin >> option;
+	if (getAction)
+	{
+		std::cout << "what would you like to do?" << std::endl;
+		std::cout << "1- get another card" << std::endl;
+		std::cout << "2- stay" << std::endl;
+		std::cin >> option;
+	}
+	else if(prob>=MIN_ADD_CARD)
+	{
+		option = GET_CARD;
+	}
+	else
+	{
+		option = STAY;
+	}
+
 	return option;
 }
-int dealer::userInteraction()
+int dealer::userInteraction(bool getAction)
 //speak with the user and ask him what he want to do until he stay\bust
 //input:none
 //output:the sum of his cards
 {
-	int const SIM_NUM = 100000;
+	float const MIN_ADD_CARD = 0.5;
+	int const SIM_NUM = 10000;
 	int const GET_CARD = 1;
 	int const STAY = 2;
 	bool stay = false;
@@ -209,7 +269,7 @@ int dealer::userInteraction()
 		amountOfTries = sim.getBestMove(*this);
 		std::cout << "the probabilty you can draw another card is: " <<
 			amountOfTries* TO_PRECENT <<"%" << std::endl;
-		option = this->getAction();
+		option=this->getAction(getAction, amountOfTries);
 		if (option == GET_CARD)
 		{
 			this->addCard(USER);
